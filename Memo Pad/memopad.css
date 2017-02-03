@@ -1,0 +1,68 @@
+body {
+    background-color: #ffedce;
+    width: 250px;
+    float: left;
+   
+    min-height: 240px;
+    border-radius: 10px;
+    
+}
+
+h1 {
+    text-align: center;
+    caption-side: top;
+    background-color: #d9d8a7;
+    margin-bottom: 10px; 
+    border-radius: 6px;
+    box-shadow: 5px 5px #aaaaaa;
+}
+
+#input-txt, #title{
+    width: 238px;
+    margin: 3px 5px;
+}
+#title, #edit-title{
+    height: 25px;
+}
+#input-txt,#edit-txt1 {
+    height: 158px;
+}
+
+
+button { 
+    margin: 5px;
+    width: 100px;
+    background-image: linear-gradient(to bottom, #ffedce 0%, #ffaa00 100%);
+    border-radius: 6px;
+}
+
+#saveall, #addmemo, .btn-save{
+    margin:5px;
+}
+#edit-title, #edit-txt1, span, .date_p{
+    margin-left:5px;
+}
+
+#edit-title,#edit-txt1{
+    width: 238px;
+}
+
+.locSto_p{
+    margin:0px;
+}
+.memotbl{
+    border:solid 1px #aaaaaa;
+}
+
+#one .green{
+    background-color: #d9d8a7;
+}
+.hidden{
+    display:none;
+}
+.title_p,.text_p{
+    margin:0px 5px 0px 5px;
+    border: 1px solid olive; 
+    border-collapse: collapse;
+    background-color: #FFFAFA;
+}

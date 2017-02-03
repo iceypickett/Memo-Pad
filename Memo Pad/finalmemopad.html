@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" rel="stylesheet" href="memopad.css">
+    <title>memopad</title>
+    <!-- // <script src="quill/quill.js"></script> -->
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script>
+    var memoList = [];
+    var editNum = 0;
+    $(function() {
+        var memoMgr = window.localStorage.getItem('memo');
+        // console.log(memoMgr);
+        if (memoMgr !== null) {
+            // console.log(22222);
+            // 文字列を配列に変更
+            var arr = JSON.parse(memoMgr);
+            // console.log(3333);
+            // for文でメモの数だけ下記のコードをoutputにappendする
+            for (var i = 0; i < arr.length; i++) {
+                // console.log(4444);
+
+                //i gets lists objects then the properties
+                var text = arr[i].text;
+                var title = arr[i].title;
+
+                var today = new Date();
+                var d = today.toUTCString();
+                // make this into little parts
+                var tag = '<div class="oya">' + '<p class="locSto_p ">' + "<span>" + "</span>" + "</p>";
+
+                var tag2 = '<p class="title_p ">' + "<span>" + title + "</span>" + "</p>";
+
+                var tag3 = '<p class="text_p ">' + "<span>" + text + "</span>" + "</p>";
+                var tag4 = '<p class="buttons_p ">' + '<button class="btn-face">(☆^O^☆)</button>' + '<button class="btn-delete">削除</button>' + '<button class="btn-edit">編集</button>' + "</p>" + "</div>";
+                var tag5 = '<p class="date_p ">' + d + "</p>" + "</div>";
+                var newTag = tag + tag2 + tag3 + tag4 + tag5;
+                $("#one").append(newTag);
+
+                // $("#one").append("<p>" + "<span>" + localStorage.length + "<br>" + objNum.title + "<br>" + objNum.text + "</span>" + '<button class="btn-face">(☆^O^☆)</button>' + '<button class="btn-delete">削除</button>' + '<button class="btn-edit">編集</button>' + "</p>");
+            }
+            // memoListにlistの情報を入れる
+            memoList = arr;
+            // console.log(memoList);
+        }
+        // ========================================================================
+        // Add a memo
+        $("#addmemo").on("click", function() {
+
+            var s = $("#title").val();
+            var str = $("#input-txt").val();
+            // console.log(2222);
+            var t = str.replace(/\r?\n/g, '<br>');
+            // replace("<br>")
+
+            var today = new Date();
+            var d = today.toUTCString();
+
+            var mix = {
+                title: s,
+                text: t,
+                date: d
+            }
+            memoList.push(mix);
+
+            var jsonStr = JSON.stringify(memoList);
+            localStorage.setItem("memo", jsonStr);
+            // console.log(mix);
+
+            // 追加するHTMLを記述
+            // they're all connected at the end so put one div at the beginning and one at the end to close the entire line
+            var tag = '<div class="oya">' + '<p class="locSto_p ">' + "<span>" + "</span>" + "</p>";
+            var tag2 = '<p class="title_p ">' + "<span>" + s + "</span>" + "</p>";
+            var tag3 = '<p class="text_p ">' + "<span>" + t + "</span>" + "</p>";
+            //         
+            var tag4 = '<p class="buttons_p ">' + '<button class="btn-face">(☆^O^☆)</button>' + '<button class="btn-delete">削除</button>' + '<button class="btn-edit">編集</button>' + '</p>';
+            var tag5 = '<p class="date_p ">' + d + "</p>" + "</div>";
+            var newTag = tag + tag2 + tag3 + tag4 + tag5;
+
+            $("#one").append(newTag);
+
+
+            // $("#one").append("<p>" + localStorage.length + "<span>" + "<br>" + s + "<br>" + t + "</span>" + "<br>" + '<button class="btn-face">(☆^O^☆)</button>' + '<button class="btn-delete">削除</button>' + '<button class="btn-edit">編集</button>' + "<br>" + d + "</p>");
+
+        });
+        // ========================================================================
+        //DELETE
+        // タグを削除
+        $("#one").on("click", ".btn-delete", function() {
+            var del = confirm("Are you sure you want to delete this record?");
+
+            if (del == true) {
+                var $pTag = $(this).parent().parent();
+                // console.log($pTag);
+
+                // pタグが何番目かを取得
+                var num = $(".oya").index($pTag);
+                // console.log(num);
+
+                // その番号のタグを削除
+                $pTag.remove();
+
+
+                // 配列から削除
+                memoList.splice(num, 1);
+                // console.log(memoList);
+                var jsonStr = JSON.stringify(memoList);
+
+                localStorage.removeItem("memo", jsonStr);
+
+            }
+            return del;
+        });
+        // ========================================================================
+        //PRIORITIZE
+
+        $("#one").on("click", ".btn-face", function() {
+            var pTag = $(this).parent().parent();
+            var num = $(".oya").index(pTag);
+            pTag.toggleClass("green");
+        });
+        // ========================================================================
+        //EDIT
+        $("#one").on("click", ".btn-edit", function() {
+
+            $("div:hidden").show("slow");
+            var $pTag = $(this).parent().parent();
+            console.log($pTag);
+
+            editNum = $('#one .oya').index($pTag);
+            console.log(editNum);
+
+            // テキストの内容を取得
+            var title = $pTag.find('.title_p').text();
+            console.log(title);
+            var txt = $pTag.find('.text_p span').html();
+            // console.log(txt);
+            txt = txt.replace(/<br>/g, '\n');
+            console.log(txt);
+            // #edit-title/#edit-txt1にテキストを表示
+            $("#edit-title").val(title);
+            $('#edit-txt1').val(txt);
+            // console.log(str);       
+
+        });
+        // ========================================================================
+
+        // SAVE EDIT
+        $("#btn-save").on("click", function() {
+            $("#hidden").hide("slow");
+
+            //#edit-txt1 gets the string
+            var titleText = $("#edit-title").val();
+            console.log(titleText);
+
+            var inputText = $("#edit-txt1").val();
+            console.log(inputText);
+
+
+            // grab the # of the p you want to edit by automatically knowing which 
+
+            // pタグが何番目かを取得
+            var num = editNum;
+            console.log(num);
+
+            var today = new Date();
+            var d = today.toUTCString();
+            // change the num of <p>　eq is looking for which <p>　0 1 
+            $("#one .oya").eq(num).find(".title_p span").text(titleText);
+            $("#one .oya").eq(num).find(".text_p span").text(inputText);
+            $("#one .oya").eq(num).find(".date_p").html(d);
+            // var tag5 = '<p class="date_p ">' + d + "</p>" + "</div>";
+            // memoList.push(tag5);
+            // how do i get the date to show again????
+
+            var obj = {
+                title: titleText,
+                text: inputText,
+                date: d
+            }
+
+            // these objects are substituted in the array
+            console.log(obj);
+            // 配列の情報を変更
+            // .text
+            memoList[num] = obj;
+            console.log(memoList);
+
+            var jsonStr = JSON.stringify(memoList);
+            localStorage.setItem("memo", jsonStr);
+        });
+        // ========================================================================
+
+    });
+    </script>
+</head>
+
+<body>
+    <h1>Memo Time!</h1>
+    <textarea id="title" placeholder="Title" cols="30" rows="10"></textarea>
+    <textarea id="input-txt" placeholder="Fill me up" autofocus cols="30" rows="10"></textarea>
+    <button id="addmemo">Add memo</button>
+    <div id="one">
+    </div>
+    <!-- EDIT SCREEN -->
+    <div id="hidden" style="display:none;">
+        <textarea id="edit-title" placeholder="Edit title" cols="30" rows="10"></textarea>
+        <textarea id="edit-txt1" placeholder="Edit text" cols="30" rows="10"></textarea>
+        <button id="btn-save">save changes</button>
+    </div>
+</body>
+
+</html>
